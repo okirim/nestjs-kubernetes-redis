@@ -1,0 +1,83 @@
+# apiVersion: v1
+# kind: PersistentVolumeClaim  
+# metadata:
+#   name: auth-db-pvc
+#   namespace: auth
+# spec:
+#   storageClassName: manual
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 2Gi
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: auth-db-pv
+#   labels:
+#     type: local
+# spec:
+#   storageClassName: manual
+#   capacity:
+#     storage: 2Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   hostPath:
+#     path: "/mnt/data"
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: auth-db
+#   namespace: auth
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: auth-db
+#   template:
+#     metadata:
+#       labels:
+#         app: auth-db
+#     spec:
+#       containers:
+#       - name: auth-db
+#         image: mysql:8.0
+#         env:
+#           - name: DB_PASSWORD
+#             value: password
+#           - name: DB_USERNAME
+#             value: kadiro  
+#         resources:
+#           limits:
+#             memory: "128Mi"
+#             cpu: "500m"
+#         ports:
+#         - containerPort: 3306
+#         volumeMounts:
+#         - name: mysql-persistent-storage
+#           mountPath: /var/lib/mysql
+#       volumes:
+#         - name: mysql-persistent-storage
+#           persistentVolumeClaim:
+#             claimName: auth-db-pv
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: auth-db-service
+#   namespace: default
+# spec:
+#   selector:
+#     app: auth-db
+#   type: ClusterIP
+#   sessionAffinity: None
+#   sessionAffinityConfig:
+#     clientIP:
+#       timeoutSeconds: 10800
+#   ports:
+#   - name: auth
+#     protocol: TCP
+#     port: 3306
+#     targetPort: 3306

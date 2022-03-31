@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: users-pv-claim
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: do-block-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  type: ClusterIP
+  selector:
+    component: mysql
+  ports:
+  - name: users-db
+    port: 3306
+---
+ apiVersion: apps/v1
+ kind: Deployment
+ metadata:
+   name: users-db
+   namespace: users
+ spec:
+   replicas: 1
+   selector:
+     matchLabels:
+       app: users-db
+   template:
+     metadata:
+       labels:
+         app: users-db
+     spec:
+       containers:
+       - name: users-db
+         image: mysql:8.0
+         env:
+           - name: MYSQL_DATABASE
+             valueFrom:
+               configMapKeyRef:
+               name: mysql-config
+               value: db_users
+           - name: MYSQL_USER
+             valueFrom:
+               configMapKeyRef:
+               name: mysql-config
+               value: mysql_user
+           - name: MYSQL_PASSWORD
+             valueFrom:
+               configMapKeyRef:
+               name: mysql-config
+               value: mysql_pass
+           - name: MYSQL_ROOT_PASSWORD
+             valueFrom:
+               configMapKeyRef:
+               name: mysql-config
+               value: mysql_root_password
+         resources:
+            requests:
+              memory: "1Gi"
+              cpu: "200m"
+            limits:
+              memory: "2Gi"
+              cpu: "400m"
+         ports:
+             - containerPort: 3306
+               name: mysql-users
+         volumeMounts:
+         - name: mysql-persistent-storage
+           mountPath: /var/lib/mysql
+       volumes:
+         - name: mysql-persistent-storage
+           persistentVolumeClaim:
+             claimName: users-pv-claim
+

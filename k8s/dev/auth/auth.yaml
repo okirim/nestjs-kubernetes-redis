@@ -1,0 +1,42 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: auth
+#   namespace: auth
+# spec:
+#   selector:
+#     matchLabels:
+#       app: auth
+#   template:
+#     metadata:
+#       labels:
+#         app: auth
+#     spec:
+#       containers:
+#       - name: auth
+#         image: learning/auth-dev
+#         resources:
+#           limits:
+#             memory: "128Mi"
+#             cpu: "500m"
+#         ports:
+#         - containerPort: 3000
+#         env:
+#           - name: DATABASE_URI
+#             value: 'auth-db.auth'
+#           - name: DB_PASSWORD
+#             value: password
+#           - name: DB_USERNAME
+#             value: kadiro  
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: auth
+#   namespace: auth
+# spec:
+#   selector:
+#     app: auth
+#   ports:
+#   - port: 3005
+#     targetPort: 3000

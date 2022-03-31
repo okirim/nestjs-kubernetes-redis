@@ -1,0 +1,27 @@
+apiVersion: skaffold/v2beta26 
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - "./k8s/dev/*"
+build:
+  local: 
+    push: false
+  artifacts:
+    - image: okirim/gateway-dev
+      context: gateway
+      docker:
+        dockerfile: dev.Dockerfile
+      sync:
+        manual:
+          - src: 'src/*'
+            dest: . 
+    - image: okirim/users-dev
+      context: users
+      docker:
+        dockerfile: dev.Dockerfile
+      sync:
+        manual:
+          - src: 'src/*'
+            dest: .
+                  
