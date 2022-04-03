@@ -24,4 +24,12 @@ build:
         manual:
           - src: 'src/*'
             dest: .
+    - image: okirim/auth-dev
+      context: auth
+      docker:
+        dockerfile: dev.Dockerfile
+      sync:
+        manual:
+          - src: 'src/*'
+            dest: .
                   

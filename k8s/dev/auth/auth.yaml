@@ -1,42 +1,44 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: auth
-#   namespace: auth
-# spec:
-#   selector:
-#     matchLabels:
-#       app: auth
-#   template:
-#     metadata:
-#       labels:
-#         app: auth
-#     spec:
-#       containers:
-#       - name: auth
-#         image: learning/auth-dev
-#         resources:
-#           limits:
-#             memory: "128Mi"
-#             cpu: "500m"
-#         ports:
-#         - containerPort: 3000
-#         env:
-#           - name: DATABASE_URI
-#             value: 'auth-db.auth'
-#           - name: DB_PASSWORD
-#             value: password
-#           - name: DB_USERNAME
-#             value: kadiro  
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: auth
-#   namespace: auth
-# spec:
-#   selector:
-#     app: auth
-#   ports:
-#   - port: 3005
-#     targetPort: 3000
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  auth-dep
+spec:
+  selector:
+    matchLabels:
+      app: auth-pod
+  template:
+    metadata:
+      labels:
+        app:  auth-pod
+    spec:
+      containers:
+      - name:  auth-container
+        image:  okirim/auth-dev:latest
+        env:
+          - name: REDIS_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: env
+                key: redis_host
+        command: ["npm","run","start:debug"]
+        ports:
+        - containerPort:  3000
+          name:  auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+  #namespace: ingress-nginx
+spec:
+  selector:
+    app: auth-pod
+  ports:
+  - name: auth
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+---
+#   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/cloud/deploy.yaml
+#   kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+#   kubectl get services -n ingress-nginx

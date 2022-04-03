@@ -1,0 +1,10 @@
+{
+    "type": "mysql",
+    "host": "auth-svc.default.svc.cluster.local",
+    "port": 3306,
+    "username": "root",
+    "password": "root",
+    "database": "auth",
+    "entities": ["dist/**/*.entity{.ts,.js}"],
+    "synchronize": true
+  }

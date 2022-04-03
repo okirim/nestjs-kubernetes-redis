@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: users-pv-claim
+  name: auth-pv-claim
 spec:
   accessModes:
   - ReadWriteOnce
@@ -19,33 +19,33 @@ spec:
   selector:
     component: mysql
   ports:
-  - name: users-db
+  - name: auth-db
     port: 3306
 ---
  apiVersion: apps/v1
  kind: Deployment
  metadata:
-   name: users-db
-   namespace: users
+   name: auth-db
+   namespace: auth
  spec:
    replicas: 1
    selector:
      matchLabels:
-       app: users-db
+       app: auth-db
    template:
      metadata:
        labels:
-         app: users-db
+         app: auth-db
      spec:
        containers:
-       - name: users-db
+       - name: auth-db
          image: mysql:8.0
          env:
           #  - name: MYSQL_DATABASE
           #    valueFrom:
           #      configMapKeyRef:
           #      name: mysql-config
-          #      value: db_users
+          #      value: db_auth
           #  - name: MYSQL_USER
           #    valueFrom:
           #      configMapKeyRef:
@@ -70,12 +70,12 @@ spec:
               cpu: "400m"
          ports:
              - containerPort: 3306
-               name: mysql-users
+               name: mysql-auth
          volumeMounts:
          - name: mysql-persistent-storage
            mountPath: /var/lib/mysql
        volumes:
          - name: mysql-persistent-storage
            persistentVolumeClaim:
-             claimName: users-pv-claim
+             claimName: auth-pv-claim
 

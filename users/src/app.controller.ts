@@ -1,10 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
-import { Ctx, MessagePattern, Payload, RedisContext } from '@nestjs/microservices';
+import { Controller, Get, Inject } from '@nestjs/common';
+import { Ctx, MessagePattern, Payload, RedisContext, ClientProxy } from '@nestjs/microservices';
 import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService,
+    @Inject('USERS_SERVICE') private client:ClientProxy
+    ) {}
 
   @MessagePattern('test')
   getNotifications(@Payload() data: number[], @Ctx() context: RedisContext) {
