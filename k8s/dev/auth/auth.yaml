@@ -24,6 +24,26 @@ spec:
         ports:
         - containerPort:  3000
           name:  auth
+        resources:
+        #   requests:
+        #     cpu: 100m
+        #     memory: 100Mi
+        #   limits:
+        #     cpu: 100m
+        #     memory: 100Mi
+        livenessProbe:
+          httpGet:
+            path: /auth/health
+            port: 3000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /auth/health
+            port: 3000     
 ---
 apiVersion: v1
 kind: Service

@@ -34,3 +34,10 @@ spec:
             name: gateway
             port:
               name: gateway
+       - path: /auth/health
+         pathType: Prefix
+         backend:
+          service:
+            name: gateway
+            port:
+              name: gateway

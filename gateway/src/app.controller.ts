@@ -23,4 +23,9 @@ export class AppController {
     console.log('users')
     return 'get all users';
   }
+    @Get('/auth/health')
+  authHealth(): string {
+    console.log('auth health')
+    return 'auth health';
+  }
 }

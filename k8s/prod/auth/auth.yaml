@@ -27,25 +27,26 @@ spec:
       - name:  auth-container
         image:  okirim/auth-prod:latest
         command: ["npm","run","start:debug"]
-        # resources:
+        resources:
         #   requests:
         #     cpu: 100m
         #     memory: 100Mi
         #   limits:
         #     cpu: 100m
         #     memory: 100Mi
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: 3000
-        #   initialDelaySeconds: 5
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 3
-        #   periodSeconds: 10
-        # readinessProbe:
-        #   httpGet:
-        #     path: /_status/healthz
-        #     port: 3000
+        livenessProbe:
+          httpGet:
+            path: /auth/health
+            port: 3000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /auth/health
+            port: 3000
         #   initialDelaySeconds: 5
         #   timeoutSeconds: 2
         #   successThreshold: 1
